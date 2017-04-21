@@ -3,7 +3,20 @@ machine:
     - docker
 dependencies:
     pre:
-      - sudo apt-get update && sudo apt-get install -y imagemagick webp
+      - sudo apt-get update && sudo apt-get install -y libwebp-dev libjpeg-dev libpng12-dev wget
+      - wget https://www.imagemagick.org/download/ImageMagick.tar.gz
+      - tar xvzf ImageMagick.tar.gz
+      - cd ImageMagick-7.0.5-4
+      - ./configure:
+          pwd:
+            ImageMagick-7.0.5-4
+      - make -j4:
+          pwd:
+            ImageMagick-7.0.5-4
+      - sudo make install:
+          pwd:
+            ImageMagick-7.0.5-4
+      - sudo ldconfig /usr/local/lib
 test:
   override:
     - go test -v -race ./...

@@ -108,7 +108,6 @@ func TestGetTrimInfo(t *testing.T) {
 	c := NewMagick()
 	c.InputFile("source.jpg")
 	rect, err := c.GetTrimInfo(25, 0)
-	fmt.Printf("Rect: %v\n", rect)
 	assert.Nil(t, err)
 	assert.NotNil(t, rect)
 }
