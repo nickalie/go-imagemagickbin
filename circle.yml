@@ -1,0 +1,10 @@
+machine:
+  services:
+    - docker
+dependencies:
+    pre:
+      - sudo apt-get update && sudo apt-get install -y imagemagick webp
+test:
+  override:
+    - go test -v -race ./...
+    - docker build -f docker/Dockerfile.alpine --rm=false -t test-imagemagick-alpine-image .
