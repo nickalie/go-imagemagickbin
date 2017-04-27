@@ -10,7 +10,7 @@ dependencies:
       - ./configure:
           pwd:
             ImageMagick-7.0.5-4
-      - make -j4:
+      - make:
           pwd:
             ImageMagick-7.0.5-4
       - sudo make install:

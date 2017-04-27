@@ -1,17 +1,18 @@
 package imagemagickbin
 
 import (
-	"image"
-	"io"
-	"github.com/nickalie/go-binwrapper"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/nickalie/go-binwrapper"
+	"image"
 	"image/png"
-	"strings"
+	"io"
 	"strconv"
+	"strings"
 )
 
+// Magick is a wrapper for convert tool
 type Magick struct {
 	*binwrapper.BinWrapper
 	inputFile    string
@@ -25,6 +26,7 @@ type Magick struct {
 	trim         bool
 }
 
+// NewMagick creates new Magick instance.
 func NewMagick() *Magick {
 	return &Magick{
 		BinWrapper:   createBinWrapper(),
@@ -33,8 +35,8 @@ func NewMagick() *Magick {
 	}
 }
 
-//Sets image file to convert
-//Input or InputImage called before will be ignored
+// InputFile sets image file to convert.
+// Input or InputImage called before will be ignored.
 func (c *Magick) InputFile(file string) *Magick {
 	c.input = nil
 	c.inputImage = nil
@@ -42,8 +44,8 @@ func (c *Magick) InputFile(file string) *Magick {
 	return c
 }
 
-//Sets reader to convert
-//InputFile or InputImage called before will be ignored
+// Input sets reader to convert.
+// InputFile or InputImage called before will be ignored.
 func (c *Magick) Input(reader io.Reader) *Magick {
 	c.inputFile = ""
 	c.inputImage = nil
@@ -51,8 +53,8 @@ func (c *Magick) Input(reader io.Reader) *Magick {
 	return c
 }
 
-//Sets image to convert
-//InputFile or Input called before will be ignored
+// InputImage sets image to convert.
+// InputFile or Input called before will be ignored.
 func (c *Magick) InputImage(img image.Image) *Magick {
 	c.inputFile = ""
 	c.input = nil
@@ -60,38 +62,47 @@ func (c *Magick) InputImage(img image.Image) *Magick {
 	return c
 }
 
-//Specify the name of the output image file
-//Output called before will be ignored
+// OutputFile specify the name of the output image file.
+// Output called before will be ignored.
 func (c *Magick) OutputFile(file string) *Magick {
 	c.output = nil
 	c.outputFile = file
 	return c
 }
 
-//Specify writer to write image file content
-//OutputFile called before will be ignored
+// Output specify writer to write image file content.
+// OutputFile called before will be ignored.
 func (c *Magick) Output(writer io.Writer) *Magick {
 	c.outputFile = ""
 	c.output = writer
 	return c
 }
 
+// OutputFormat specifies output format of the image.
 func (c *Magick) OutputFormat(format string) *Magick {
 	c.outputFormat = format
 	return c
 }
 
+// Fuzz uses a number of algorithms search for a target color.
+// By default the color must be exact.
+// Use this option to match colors that are close to the target color in RGB space.
+// For example, if you want to automagically trim the edges of an image with Trim, but the image was scanned and the target background color may differ by a small amount.
+// This option can account for these differences.
 func (c *Magick) Fuzz(percents uint) *Magick {
 	c.fuzz = percents
 	return c
 }
 
+// Trim removes any edges that are exactly the same color as the corner pixels.
+// Use Fuzz to make Trim remove edges that are nearly the same color as the corner pixels.
 func (c *Magick) Trim(trim bool) *Magick {
 	c.trim = trim
 	return c
 }
 
-func (c *Magick) GetTrimInfo(fuzz uint, threshold int) (*image.Rectangle, error)  {
+// GetTrimInfo returns trimmed rectangle without performin trim.
+func (c *Magick) GetTrimInfo(fuzz uint, threshold int) (*image.Rectangle, error) {
 	defer c.BinWrapper.Reset()
 	c.setInput()
 	err := c.Arg("-fuzz", fmt.Sprintf("%d%%", fuzz)).Arg("-trim").Arg("info:").Run()
@@ -159,7 +170,7 @@ func (c *Magick) GetTrimInfo(fuzz uint, threshold int) (*image.Rectangle, error)
 		return nil, err
 	}
 
-	if 100 * (width * height) / (initialWidth * initialHeight) < threshold {
+	if 100*(width*height)/(initialWidth*initialHeight) < threshold {
 		return nil, errors.New("To much trimmed")
 	}
 
@@ -167,10 +178,13 @@ func (c *Magick) GetTrimInfo(fuzz uint, threshold int) (*image.Rectangle, error)
 		return nil, errors.New("Nothing to trim")
 	}
 
-	result := image.Rect(x, y, x + width, y + height)
+	result := image.Rect(x, y, x+width, y+height)
 	return &result, nil
 }
 
+// Quality specifies quality to compress the image.
+// quality is 1 (lowest image quality and highest compression) to 100 (best quality but least effective compression).
+// The default is to use the estimated quality of your input image if it can be determined, otherwise 92.
 func (c *Magick) Quality(quality uint) *Magick {
 	if quality > 100 {
 		quality = 100
@@ -180,16 +194,18 @@ func (c *Magick) Quality(quality uint) *Magick {
 	return c
 }
 
+// Version returns convert version.
 func (c *Magick) Version() (string, error) {
 	err := c.BinWrapper.Run("-version")
 
 	if err != nil {
 		return "", err
-	} else {
-		return string(bytes.Split(c.StdOut(), []byte("\n"))[0]), nil
 	}
+
+	return string(bytes.Split(c.StdOut(), []byte("\n"))[0]), nil
 }
 
+// Run starts convert with specified parameters.
 func (c *Magick) Run() (image.Image, error) {
 	defer c.BinWrapper.Reset()
 	err := c.setInput()
@@ -225,7 +241,7 @@ func (c *Magick) Run() (image.Image, error) {
 	return nil, nil
 }
 
-//Resets all parameters to default values
+// Reset resets all parameters to default values
 func (c *Magick) Reset() *Magick {
 	c.quality = -1
 	c.fuzz = 0
