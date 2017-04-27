@@ -6,16 +6,16 @@ dependencies:
       - sudo apt-get update && sudo apt-get install -y libwebp-dev libjpeg-dev libpng12-dev wget
       - wget https://www.imagemagick.org/download/ImageMagick.tar.gz
       - tar xvzf ImageMagick.tar.gz
-      - cd ImageMagick-7.0.5-4
+      - cd ImageMagick-7.0.5-5
       - ./configure:
           pwd:
-            ImageMagick-7.0.5-4
+            ImageMagick-7.0.5-5
       - make:
           pwd:
-            ImageMagick-7.0.5-4
+            ImageMagick-7.0.5-5
       - sudo make install:
           pwd:
-            ImageMagick-7.0.5-4
+            ImageMagick-7.0.5-5
       - sudo ldconfig /usr/local/lib
 test:
   override:
