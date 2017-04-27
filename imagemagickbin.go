@@ -43,12 +43,12 @@ func createBinWrapper() *binwrapper.BinWrapper {
 				Os("darwin").ExecPath("bin/convert")).
 			Src(
 				binwrapper.NewSrc().
-					URL(base + "ImageMagick-7.0.5-4-portable-Q16-x64.zip").
+					URL(base + "ImageMagick-7.0.5-5-portable-Q16-x64.zip").
 					Os("win32").
 					Arch("x64")).
 			Src(
 				binwrapper.NewSrc().
-					URL(base + "ImageMagick-7.0.5-4-portable-Q16-x86.zip").
+					URL(base + "ImageMagick-7.0.5-5-portable-Q16-x86.zip").
 					Os("win32").
 					Arch("x86"))
 	}
